@@ -1,0 +1,12 @@
+let ProviderName = "Defender for Endpoint";
+DeviceProcessEvents
+| where AdditionalFields.ProcessCurrentWorkingDirectory == "/tmp"
+| where InitiatingProcessParentFileName contains "php"
+| where InitiatingProcessCommandLine contains "sh -c" 
+    and (InitiatingProcessCommandLine contains "nc" 
+        or InitiatingProcessCommandLine contains "/etc"
+        or InitiatingProcessCommandLine contains "env"
+        or InitiatingProcessCommandLine contains "id"
+        or InitiatingProcessCommandLine contains "wget"
+        or InitiatingProcessCommandLine contains "curl")
+| project ProviderName, AccountName, AdditionalFields, DeviceName, InitiatingProcessCommandLine, ProcessCommandLine, ProcessCreationTime, ProcessId

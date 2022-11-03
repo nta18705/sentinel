@@ -1,0 +1,31 @@
+let SYSCALL = () {
+LinuxAuditd_CL 
+| parse RawData with 'type=' audittype ' msg=audit(' ref '): '* 'comm="' command '"'* 'exe="' executable '"'* 'key="' key '"'*
+| project Computer, TimeGenerated, audittype, ref, command, executable, key, RawData
+};
+let CWD = () {
+LinuxAuditd_CL
+| parse RawData with 'type=' audittype ' msg=audit(' ref '): '* 'cwd="' path '"'*
+| where audittype == "CWD"
+| project Computer, audittype, ref, path, RawData
+};
+let PATH = () {
+LinuxAuditd_CL
+| parse RawData with 'type=' audittype ' msg=audit(' ref '): '* 'name="' filename '"'*
+| where audittype == "PATH"
+| project Computer, audittype, ref, filename, RawData
+};
+let EXECVE = () {
+LinuxAuditd_CL
+| parse RawData with 'type=' audittype ' msg=audit(' ref '): '* 'argc=' argc ' a0="' command '" ' params:string
+| where audittype == "EXECVE"
+// Ugly hack to get rid of nasty formatting.
+| extend parameters = replace_regex(params, @'(a{1}\d=")', '')
+| extend parameters = replace_string(parameters, '"', '')
+| project Computer, audittype, ref, argc, command, parameters, RawData
+};
+// Only SYSCALLs get tagged with the key, so we do a nested join on CWD and PATH records
+SYSCALL
+| where key contains tamper_type
+| join (CWD | join (EXECVE | join PATH on ref, Computer) on ref, Computer) on ref, Computer
+| project Hostname = Computer, Time = TimeGenerated, Type = key, WorkingDirectory = path, File = filename, Command = command, Parameters = parameters, Executable = executable

@@ -1,0 +1,9 @@
+## Exclude alerts for legitimate mdatp behaviour
+-a never,exit -F arch=b64 -S socket,connect,accept,bind,rename,rmdir,unlink,ptrace,openat,unlinkat,renameat,accept4,renameat2 -F exe=/opt/microsoft/mdatp/sbin/telemetryd_v2 -F key=mdatp-log-tampering
+-a never,exit -F arch=b64 -S socket,connect,accept,bind,rename,rmdir,unlink,ptrace,openat,unlinkat,renameat,accept4,renameat2 -F exe=/opt/microsoft/mdatp/sbin/wdavdaemon -F key=mdatp-log-tampering
+## Detect modifications to Defender config
+-a always,exit -F dir=/etc/opt/microsoft/mdatp/ -F perm=wa -F uid!=mdatp -F success=1 -k mdatp-conf-tampering
+## Detect anyone tampering with the mdatp loga, except the mdatp user itself
+-a always,exit -F dir=/var/log/microsoft/mdatp -F perm=w -F success=1 -k mdatp-log-tampering
+## Detect users executling the mdatp cli tool
+-w /opt/microsoft/mdatp/sbin/wdavdaemonclient -p x -k mdatp-cli-tampering

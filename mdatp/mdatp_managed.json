@@ -1,0 +1,33 @@
+{
+   "antivirusEngine":{
+      "behaviorMonitoring":"disabled",
+      "enableRealTimeProtection":false,
+      "scanAfterDefinitionUpdate":true,
+      "scanArchives":true,
+      "maximumOnDemandScanThreads":2,
+      "passiveMode":true,
+      "exclusionsMergePolicy":"merge",
+      "exclusions":[
+         {
+            "$type":"excludedPath",
+            "isDirectory":false,
+            "path":"/var/log/"
+         },
+         {
+            "$type":"excludedPath",
+            "isDirectory":true,
+            "path":"/run"
+         }
+      ],
+      "disallowedThreatActions":[
+         "allow",
+         "restore"
+      ]
+   },
+   "cloudService":{
+      "enabled":true,
+      "diagnosticLevel":"optional",
+      "automaticSampleSubmissionConsent":"safe",
+      "automaticDefinitionUpdateEnabled":true
+   }
+}

@@ -1,0 +1,6 @@
+Syslog
+| where ProcessName contains "sshd"
+| where SyslogMessage contains "Accepted" or SyslogMessage contains "Failed"
+| parse SyslogMessage with Status "for " username " "* "from " SRC_IP " "*
+| where SRC_IP !in ("192.168.8.18", "192.168.8.254")
+| project Username = username, Status, Source = SRC_IP, Hostname = HostName, Destination = HostIP, Message = SyslogMessage

@@ -1,0 +1,5 @@
+AWSCloudTrail 
+| where UserIdentityType == "Root"
+| where UserAgent contains "console.amazonaws.com"
+| project AWS_Acct = UserIdentityAccountId, Username = UserIdentityUserName, AWS_Region = AWSRegion, Source_IP = SourceIpAddress, AWS_Service = EventSource, Action = EventName, Session_Created = SessionCreationDate, Time = TimeGenerated
+| summarize ActivityEntities = make_list(pack("Activity", Action, "Source IP", Source_IP, "Service", AWS_Service)) by Session_Created, AWS_Region, AWS_Acct

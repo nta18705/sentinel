@@ -1,0 +1,244 @@
+{
+    "version": "Notebook/1.0",
+    "items": [
+      {
+        "type": 9,
+        "content": {
+          "version": "KqlParameterItem/1.0",
+          "parameters": [
+            {
+              "id": "503c2ab4-fbe9-498a-a0fb-031976052207",
+              "version": "KqlParameterItem/1.0",
+              "name": "Time_Range",
+              "label": "Time Range",
+              "type": 4,
+              "description": "Specifies the time that data should be fetched for from now",
+              "isRequired": true,
+              "value": {
+                "durationMs": 7776000000
+              },
+              "typeSettings": {
+                "selectableValues": [
+                  {
+                    "durationMs": 300000
+                  },
+                  {
+                    "durationMs": 900000
+                  },
+                  {
+                    "durationMs": 1800000
+                  },
+                  {
+                    "durationMs": 3600000
+                  },
+                  {
+                    "durationMs": 14400000
+                  },
+                  {
+                    "durationMs": 43200000
+                  },
+                  {
+                    "durationMs": 86400000
+                  },
+                  {
+                    "durationMs": 172800000
+                  },
+                  {
+                    "durationMs": 259200000
+                  },
+                  {
+                    "durationMs": 604800000
+                  },
+                  {
+                    "durationMs": 1209600000
+                  },
+                  {
+                    "durationMs": 2419200000
+                  },
+                  {
+                    "durationMs": 2592000000
+                  },
+                  {
+                    "durationMs": 5184000000
+                  },
+                  {
+                    "durationMs": 7776000000
+                  }
+                ]
+              },
+              "timeContext": {
+                "durationMs": 86400000
+              }
+            }
+          ],
+          "style": "above",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces"
+        },
+        "name": "parameters - 3"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "## SSH Lateral Movement Workbook\n---\n\nThis workbook summarises information regarding lateral movement within the environment using SSH.  This is based on a number of `authorised` hosts that are not considered to be suspicious SSH sources.  All other SSH connections are considered suspicious."
+        },
+        "name": "text - 2"
+      },
+      {
+        "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Syslog\n| where ProcessName contains \"sshd\"\n| where SyslogMessage contains \"Accepted\" or SyslogMessage contains \"Failed\"\n| parse SyslogMessage with Status \"for \" username \" \"* \"from \" SRC_IP \" \"*\n| where SRC_IP !in (\"192.168.8.18\", \"192.168.8.254\")\n| project Username = username, Status, Source = SRC_IP, Hostname = HostName, Destination = HostIP, Message = SyslogMessage",
+                "size": 0,
+                "timeContext": {
+                  "durationMs": 7776000000
+                },
+                "timeContextFromParameter": "Time_Range",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "visualization": "table"
+              },
+              "customWidth": "66",
+              "name": "query - 3"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Syslog\n| where ProcessName contains \"sshd\"\n| where SyslogMessage contains \"Accepted\" or SyslogMessage contains \"Failed\"\n| parse SyslogMessage with Status \" \"*\n| summarize event_count = count() by Status\n\n\n\n\n\n\n\n",
+                "size": 0,
+                "timeContext": {
+                  "durationMs": 7776000000
+                },
+                "timeContextFromParameter": "Time_Range",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "visualization": "barchart"
+              },
+              "customWidth": "33",
+              "name": "query - 4"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Syslog\n| where ProcessName contains \"sshd\"\n| where SyslogMessage contains \"Accepted\" or SyslogMessage contains \"Failed\"\n| parse SyslogMessage with Status \"for \" username \" \"* \"from \" SRC_IP \" \"*\n| where SRC_IP !in (\"192.168.8.18\", \"192.168.8.254\")\n| summarize count() by SRC_IP, bin(TimeGenerated, 1d)",
+                "size": 0,
+                "title": "Source IPs",
+                "timeContext": {
+                  "durationMs": 7776000000
+                },
+                "timeContextFromParameter": "Time_Range",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "visualization": "piechart"
+              },
+              "customWidth": "33",
+              "name": "query - 6"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Syslog\n| where ProcessName contains \"sshd\"\n| where SyslogMessage contains \"Accepted\" or SyslogMessage contains \"Failed\"\n| parse SyslogMessage with Status \"for \" username \" \"* \"from \" SRC_IP \" \"*\n| where SRC_IP !in (\"192.168.8.18\", \"192.168.8.254\")\n| summarize count() by username, bin(TimeGenerated, 1d)",
+                "size": 0,
+                "title": "Usernames",
+                "timeContext": {
+                  "durationMs": 7776000000
+                },
+                "timeContextFromParameter": "Time_Range",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "visualization": "piechart"
+              },
+              "customWidth": "33",
+              "name": "query - 5"
+            },
+            {
+              "type": 3,
+              "content": {
+                "version": "KqlItem/1.0",
+                "query": "Syslog\n| where ProcessName contains \"sshd\"\n| where SyslogMessage contains \"Accepted\" or SyslogMessage contains \"Failed\"\n| parse SyslogMessage with Status \"for \" username \" \"* \"from \" SRC_IP \" \"*\n| where SRC_IP !in (\"192.168.8.18\", \"192.168.8.254\")\n| summarize count() by HostName, bin(TimeGenerated, 1d)",
+                "size": 0,
+                "title": "Destination Hostnames",
+                "timeContext": {
+                  "durationMs": 7776000000
+                },
+                "timeContextFromParameter": "Time_Range",
+                "queryType": 0,
+                "resourceType": "microsoft.operationalinsights/workspaces",
+                "visualization": "piechart"
+              },
+              "customWidth": "33",
+              "name": "query - 2"
+            }
+          ]
+        },
+        "customWidth": "100",
+        "name": "Pie_Chart_Group"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "Syslog\n| where ProcessName contains \"sshd\"\n| where SyslogMessage contains \"Accepted\" or SyslogMessage contains \"Failed\"\n| parse SyslogMessage with Status \"for \" username \" \"* \"from \" SRC_IP \" \"*\n| where SRC_IP !in (\"192.168.8.18\", \"192.168.8.254\")\n| summarize count() by TimeGenerated",
+          "size": 1,
+          "timeContext": {
+            "durationMs": 0
+          },
+          "timeContextFromParameter": "Time_Range",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "visualization": "categoricalbar",
+          "graphSettings": {
+            "type": 0,
+            "topContent": {
+              "columnMatch": "TenantId",
+              "formatter": 1
+            },
+            "centerContent": {
+              "columnMatch": "ProcessID",
+              "formatter": 1,
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "maximumSignificantDigits": 3,
+                  "maximumFractionDigits": 2
+                }
+              }
+            }
+          },
+          "chartSettings": {
+            "yAxis": [
+              "count_"
+            ]
+          },
+          "mapSettings": {
+            "locInfo": "LatLong",
+            "sizeSettings": "ProcessID",
+            "sizeAggregation": "Sum",
+            "legendMetric": "ProcessID",
+            "legendAggregation": "Sum",
+            "itemColorSettings": {
+              "type": "heatmap",
+              "colorAggregation": "Sum",
+              "nodeColorField": "ProcessID",
+              "heatmapPalette": "greenRed"
+            }
+          }
+        },
+        "name": "query - 2"
+      }
+    ],
+    "fallbackResourceIds": [
+      "/subscriptions/d9502ea3-4726-451c-a390-73d06be8f90d/resourcegroups/non-dfc-sentinel/providers/microsoft.operationalinsights/workspaces/non-dfc-sentinel"
+    ],
+    "fromTemplateId": "sentinel-UserWorkbook",
+    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+  }

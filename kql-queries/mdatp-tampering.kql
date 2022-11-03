@@ -1,0 +1,18 @@
+let mdatp_stopped () = {
+DefenderEnterprise_CL 
+| where RawData contains "Stopped MDATP EDR client"
+| where TimeGenerated +5m < now()
+| summarize arg_max(TimeGenerated, *) by Computer
+| project Computer, stoppedTime = TimeGenerated
+};
+let mdatp_restarted () = {
+DefenderEnterprise_CL
+| where RawData contains "Started MDATP EDR client"
+| summarize arg_max(TimeGenerated, *) by Computer
+| project Computer, startedTime = TimeGenerated;
+};
+mdatp_stopped
+| join kind=leftouter (mdatp_restarted) on Computer
+| where startedTime < stoppedTime or startedTime > stoppedTime + 10m
+| extend restartAt = iff(startedTime < stoppedTime, todatetime("not restarted"), startedTime)
+| project Hostname = Computer, Stopped = stoppedTime, Restarted = restartAt
