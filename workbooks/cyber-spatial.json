@@ -1,1 +1,24 @@
-
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Edge_CL\n| extend data=parse_json(RawData)\n| extend source=data.src, dest=data.dst, sport=data.sport, dport=data.dport\n| project source, sport, dest, dport",
+        "size": 0,
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/5aa02996-2b07-42ac-b386-2f8e3657c8ee/resourcegroups/soc-services/providers/microsoft.operationalinsights/workspaces/edge-sentinel-integration"
+  ],
+  "fromTemplateId": "sentinel-UserWorkbook",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
